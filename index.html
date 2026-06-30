@@ -4,6 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Oráculo Master - Proteção Radiológica</title>
+    
+    <!-- Configuração do MathJax para renderizar as fórmulas perfeitamente -->
+    <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      }
+    };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap');
 
@@ -119,8 +131,8 @@
 
         .panel-header i { font-style: normal; font-size: 1.5rem; }
 
-        /* Componentes de Formulário (Oráculo) */
-        select {
+        /* Componentes de Formulário */
+        select, input {
             width: 100%;
             padding: 14px;
             font-size: 1rem;
@@ -130,12 +142,11 @@
             border: 1px solid var(--border-color);
             border-radius: 10px;
             outline: none;
-            cursor: pointer;
-            font-weight: 600;
             transition: 0.3s;
+            box-sizing: border-box;
         }
-        select:focus { border-color: var(--accent-primary); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); }
-        select:disabled { background-color: var(--bg-card); color: var(--text-muted); cursor: not-allowed; }
+        select:focus, input:focus { border-color: var(--accent-primary); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); }
+        select { cursor: pointer; font-weight: 600; }
         optgroup { background-color: var(--bg-card); color: var(--accent-glow); font-weight: 700; }
         option { background-color: var(--bg-base); color: var(--text-main); font-weight: 400; padding: 5px; }
 
@@ -165,17 +176,16 @@
         .formula-box span.const { color: #38bdf8; font-weight: 700; } 
         .formula-box span.logic { color: #fbbf24; font-weight: 700; } 
         
-        /* Matemática Científica do Resumo */
-        .math-eq { font-family: 'JetBrains Mono', monospace; display: block; text-align: center; margin: 15px 0; font-size: 1.15rem; color: #a5b4fc; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); }
-        .math-eq-number { float: right; color: var(--text-muted); font-size: 0.9rem; }
-        .formula-inline { font-family: 'JetBrains Mono', monospace; background-color: rgba(255,255,255,0.05); padding: 2px 6px; border-radius: 4px; color: #a5b4fc; }
-        
         .step-list { margin: 0; padding-left: 20px; color: var(--text-main);}
         .step-list li { margin-bottom: 10px; }
         .step-list li::marker { color: var(--accent-primary); font-weight: bold; }
 
         .alert-box { background-color: rgba(239, 68, 68, 0.1); border-left: 4px solid var(--accent-danger); padding: 15px; border-radius: 8px; margin: 20px 0; font-size: 0.95rem; }
         .alert-box strong { color: #fca5a5; display: block; margin-bottom: 5px;}
+        
+        .cobranca-box { background-color: rgba(245, 158, 11, 0.1); border: 1px solid var(--accent-warning); padding: 18px; border-radius: 8px; margin-top: 20px; font-size: 1rem;}
+        .cobranca-box h5 { color: var(--accent-warning); margin: 0 0 10px 0; font-size: 1.15rem; display: flex; align-items: center; gap: 8px;}
+        
         .success-box { background-color: rgba(16, 185, 129, 0.1); border-left: 4px solid var(--accent-success); padding: 12px 15px; margin-bottom: 20px; color: #34d399; font-weight: 600; border-radius: 8px; }
 
         /* Estilos do Guia Bizu */
@@ -196,42 +206,33 @@
         }
 
         .bizu-section { margin-bottom: 25px; }
-        .bizu-section h4 { color: var(--accent-glow); margin-bottom: 10px; font-size: 1.15rem; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;}
-        .howto-box { background-color: rgba(16, 185, 129, 0.05); border: 1px solid var(--accent-success); padding: 15px; border-radius: 8px; margin-top: 15px; }
-        .howto-box strong { color: var(--accent-success); }
+        .bizu-section h4 { color: var(--accent-glow); margin-bottom: 15px; font-size: 1.2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;}
+        .howto-box { background-color: rgba(59, 130, 246, 0.1); border: 1px solid var(--accent-primary); padding: 15px; border-radius: 8px; margin-top: 25px; }
+        .howto-box strong { color: var(--accent-glow); }
         
-        table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; background: rgba(0,0,0,0.1); border-radius: 8px; overflow: hidden;}
         th, td { border: 1px solid var(--border-color); padding: 12px; text-align: left; }
-        th { background-color: rgba(59, 130, 246, 0.1); color: var(--accent-glow); }
-        tr:nth-child(even) { background-color: rgba(255,255,255,0.02); }
+        th { background-color: rgba(59, 130, 246, 0.15); color: var(--accent-glow); }
 
-        /* Estilo Botão Sheets */
-        .btn-sheets {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            background-color: #0f9d58; 
-            color: #fff;
-            text-decoration: none;
-            padding: 15px 30px;
-            font-size: 1.2rem;
-            font-weight: 600;
-            border-radius: 10px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(15, 157, 88, 0.4);
-            border: 1px solid transparent;
+        /* Botões Especiais (Sheets e PDF) */
+        .btn-link {
+            display: inline-flex; align-items: center; gap: 8px;
+            color: #fff; text-decoration: none; padding: 12px 20px;
+            font-size: 1.05rem; font-weight: 600; border-radius: 8px;
+            transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(0,0,0,0.3); border: none;
         }
-        .btn-sheets:hover { background-color: #0b8043; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(15, 157, 88, 0.6); }
+        .btn-sheets { background-color: #0f9d58; }
+        .btn-sheets:hover { background-color: #0b8043; transform: translateY(-2px); }
+        .btn-pdf { background-color: #e11d48; width: 100%; justify-content: center; margin-bottom: 10px;}
+        .btn-pdf:hover { background-color: #be123c; transform: translateY(-2px); }
 
         /* Estilos Calculadora Interpolação */
         .inter-container { max-width: 700px; margin: 0 auto; width: 100%; }
         .input-group { margin-bottom: 20px; }
         .input-group label { display: block; margin-bottom: 8px; color: var(--text-muted); font-size: 0.95rem; font-weight: 600;}
-        .input-group input { width: 100%; padding: 14px; font-size: 1rem; font-family: 'Inter', sans-serif; background-color: var(--bg-base); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 8px; outline: none; transition: 0.3s; box-sizing: border-box;}
-        .input-group input:focus { border-color: var(--accent-primary); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); }
         .inter-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; background-color: rgba(255,255,255,0.02); padding: 20px; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 20px;}
-        .calc-btn { background-color: var(--accent-primary); color: white; border: none; padding: 14px 24px; font-size: 1.1rem; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 10px; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);}
-        .calc-btn:hover { background-color: #2563eb; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5);}
+        .calc-btn { background-color: var(--accent-primary); color: white; border: none; padding: 14px 24px; font-size: 1.1rem; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; transition: 0.3s; display: flex; justify-content: center; align-items: center;}
+        .calc-btn:hover { background-color: #2563eb; transform: translateY(-2px);}
         .result-box { margin-top: 25px; padding: 25px; background-color: rgba(16, 185, 129, 0.1); border-left: 4px solid var(--accent-success); border-radius: 8px; text-align: center; font-size: 1.8rem; color: #34d399; font-weight: bold; min-height: 40px;}
     </style>
 </head>
@@ -239,40 +240,36 @@
 
 <div class="nav-tabs">
     <button class="tab-btn active" onclick="switchTab('tab-oraculo', this)">🧮 Oráculo de Cálculo</button>
-    <button class="tab-btn" onclick="switchTab('tab-bizu', this)">📖 Guia da Prova</button>
+    <button class="tab-btn" onclick="switchTab('tab-bizu', this)">📖 Guia da Prova Avançado</button>
     <button class="tab-btn" onclick="switchTab('tab-planilha', this)">📊 Calculadora Sheets</button>
     <button class="tab-btn" onclick="switchTab('tab-interpolacao', this)">📈 Interpolação</button>
 </div>
 
+<!-- ABA 1: ORÁCULO DE CÁLCULO -->
 <div id="tab-oraculo" class="tab-pane active grid-layout">
-    
     <div class="panel">
         <div>
             <div class="panel-header"><i>🎯</i> 1. O que a questão pede?</div>
             <select id="target" onchange="updateLogic()">
                 <option value="none">-- Selecione o objetivo do enunciado --</option>
-                
                 <optgroup label="☢️ INTERAÇÃO E PARTÍCULAS (ATTIX)">
                     <option value="dose_folhas">Dose em Folhas / Placas (Metodologia Attix)</option>
                     <option value="tmax">Energia Máxima Transferida (T_max)</option>
                     <option value="stopping_power">Stopping Power de Misturas/Compostos (Bragg)</option>
                     <option value="producao_pares">Balanço de Energia na Produção de Pares</option>
                 </optgroup>
-
                 <optgroup label="⚡ GRANDEZAS E DETETORES">
                     <option value="kerma_dose">Calcular Kerma e Dose Absorvida (via Tabelas)</option>
                     <option value="dose_ar">Exposição (Roentgen) para Dose Absorvida (Gy)</option>
                     <option value="ionizacao_geiger">Detetor Geiger: Pares Formados / Carga Coletada</option>
                     <option value="inverso_quadrado">Lei do Inverso do Quadrado</option>
                 </optgroup>
-
                 <optgroup label="⏱️ RADIOATIVIDADE E FONTES">
                     <option value="ativ_massa">Encontrar Atividade a partir da Massa/Abundância</option>
                     <option value="decaimento">Decaimento: Atividade ou Fração Restante no tempo</option>
                     <option value="achar_meia_vida">Descobrir a Meia-Vida (via fração restante)</option>
                     <option value="fonte_pontual">Fluxo Isotrópico de Fonte Pontual</option>
                 </optgroup>
-
                 <optgroup label="⚖️ NORMAS E DOSES">
                     <option value="norma_areas">Classificação de Áreas (Controlada/Supervisionada)</option>
                     <option value="dose_equivalente">Calcular Dose Equivalente e Efetiva</option>
@@ -284,7 +281,6 @@
 
         <div>
             <div class="panel-header"><i>🧲</i> 2. Dados Fornecidos</div>
-            
             <div class="chip-group">
                 <div class="chip-title">Campos e Radiação</div>
                 <div class="chips">
@@ -294,7 +290,6 @@
                     <div class="chip" onclick="toggleVar('exposicao', this)">Exposição (X)</div>
                 </div>
             </div>
-
             <div class="chip-group">
                 <div class="chip-title">Tempo, Espaço e Fontes</div>
                 <div class="chips">
@@ -306,18 +301,16 @@
                     <div class="chip" onclick="toggleVar('gama', this)">Constante Gama (Γ)</div>
                 </div>
             </div>
-
             <div class="chip-group">
                 <div class="chip-title">Matéria e Propriedades</div>
                 <div class="chips">
                     <div class="chip" onclick="toggleVar('massa', this)">Massa (m) / Molar</div>
-                    <div class="chip" onclick="toggleVar('espessura', this)">Espessura (ρt ou x)</div>
-                    <div class="chip" onclick="toggleVar('abundancia', this)">Fração (Mistura/Isótopo)</div>
+                    <div class="chip" onclick="toggleVar('espessura', this)">Espessura (ρt)</div>
+                    <div class="chip" onclick="toggleVar('abundancia', this)">Fração Química</div>
                 </div>
             </div>
-
             <div class="chip-group">
-                <div class="chip-title">Tipo de Partícula (Obrigatório p/ Attix e T_max)</div>
+                <div class="chip-title">Tipo de Partícula (P/ Attix e T_max)</div>
                 <div class="chips">
                     <div class="chip radio" onclick="setParticle('foton', this)">Fóton (γ)</div>
                     <div class="chip radio" onclick="setParticle('eletron', this)">Elétron (e⁻)</div>
@@ -339,13 +332,22 @@
             </span>
         </div>
     </div>
-
 </div>
 
+<!-- ABA 2: GUIA DA PROVA (AVANÇADO) -->
 <div id="tab-bizu" class="tab-pane grid-layout">
-    
     <div class="panel">
-        <div class="panel-header"><i>📋</i> Conteúdo Integral do PDF</div>
+        <div class="panel-header" style="margin-bottom: 15px;"><i>📚</i> Material de Apoio</div>
+        <a href="Protecao_Radiologica_Exercicios.pdf" download class="btn-link btn-pdf">
+            📄 Baixar Exercícios das Aulas (PDF)
+        </a>
+        <a href="Apresentacao_Disciplina.pdf" download class="btn-link btn-pdf">
+            📄 Baixar Slides da Disciplina (PDF)
+        </a>
+        
+        <hr style="border-color: var(--border-color); margin: 15px 0; width: 100%;">
+
+        <div class="panel-header"><i>📋</i> Conteúdo de Revisão</div>
         <div class="bizu-list">
             <button class="bizu-btn active" onclick="showBizu(0, this)">📌 Tabela Rápida (Constantes) <span>▶</span></button>
             <button class="bizu-btn" onclick="showBizu(1, this)">1ª Questão: Interpretação da Norma <span>▶</span></button>
@@ -360,20 +362,21 @@
     <div class="panel" style="gap: 10px;">
         <div class="panel-header" style="color: var(--accent-warning);"><i>📖</i> Guia Definitivo de Proteção Radiológica</div>
         <div id="bizu-content">
-            </div>
+            <!-- Content injected via JS -->
+        </div>
     </div>
-
 </div>
 
+<!-- ABA 3: PLANILHA SHEETS -->
 <div id="tab-planilha" class="tab-pane">
     <div class="panel" style="text-align: center; padding: 60px 20px; align-items: center; justify-content: center; min-height: 50vh;">
         <div class="panel-header" style="justify-content: center; font-size: 1.8rem; margin-bottom: 10px; color: var(--accent-glow);">
             <i>📊</i> Calculadora Google Sheets
         </div>
         <p style="color: var(--text-muted); font-size: 1.1rem; max-width: 600px; margin-bottom: 40px;">
-            Acesse a planilha completa para realizar cálculos complexos, automatizar conversões e conferir as tabelas de interpolação em uma nova guia.
+            Acesse a planilha completa para realizar cálculos complexos, automatizar conversões e conferir as tabelas de interpolação em uma nova guia. Lembre-se de fazer uma cópia para seu Drive para não alterar a original.
         </p>
-        <a href="https://docs.google.com/spreadsheets/d/1kJKp2Jr5Me7x9-6jqZcanmofDgYbUa5ixP3a3egbvCg/edit?usp=sharing" target="_blank" class="btn-sheets">
+        <a href="https://docs.google.com/spreadsheets/d/1kJKp2Jr5Me7x9-6jqZcanmofDgYbUa5ixP3a3egbvCg/edit?usp=sharing" target="_blank" class="btn-link btn-sheets">
             <svg style="width: 24px; height: 24px; fill: white;" viewBox="0 0 24 24">
                 <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 14H7v-2h10v2zm0-4H7v-2h10v2zm0-4H7V7h10v2z"/>
             </svg>
@@ -382,13 +385,14 @@
     </div>
 </div>
 
+<!-- ABA 4: INTERPOLAÇÃO -->
 <div id="tab-interpolacao" class="tab-pane">
     <div class="panel inter-container">
         <div class="panel-header" style="justify-content: center; font-size: 1.6rem; color: var(--accent-primary);">
             <i>📈</i> Calculadora de Interpolação Linear
         </div>
         <p style="text-align: center; color: var(--text-muted); margin-bottom: 30px;">
-            Ideal para encontrar a Energia de Saída (T<sub>ex</sub>) ou Yield (Y) a partir do Alcance Residual (R<sub>ex</sub>) nas tabelas do Attix.
+            Ideal para encontrar a Energia de Saída ($T_{ex}$) ou Yield ($Y$) a partir do Alcance Residual ($R_{ex}$) nas tabelas do Attix.
         </p>
 
         <div class="inter-grid">
@@ -459,6 +463,7 @@
         <span style="font-size:0.9rem; display:block; margin-top:10px; color:var(--text-muted); font-weight:normal;">(Resultado interpolado com 6 casas decimais)</span>`;
     }
 
+    // Dados Matemáticos para a Aba de Bizus
     const bizuData = {
         0: `
             <h3 class="scenario-title">Tabela Rápida: Constantes e Conversões Fundamentais</h3>
@@ -469,315 +474,217 @@
                         <th>Valor e Unidade</th>
                     </tr>
                     <tr>
-                        <td>Carga elementar do elétron (e)</td>
-                        <td><span class="formula-inline">1,602 &times; 10<sup>-19</sup> C</span></td>
+                        <td>Carga elementar do elétron ($e$)</td>
+                        <td>$1,602 \\times 10^{-19}$ C</td>
                     </tr>
                     <tr>
                         <td>1 Eletron-volt (eV)</td>
-                        <td><span class="formula-inline">1,602 &times; 10<sup>-19</sup> J</span></td>
+                        <td>$1,602 \\times 10^{-19}$ J</td>
                     </tr>
                     <tr>
                         <td>1 Mega Eletron-volt (MeV)</td>
-                        <td><span class="formula-inline">1,602 &times; 10<sup>-13</sup> J</span></td>
+                        <td>$1,602 \\times 10^{-13}$ J</td>
                     </tr>
                     <tr>
-                        <td>Energia média de ionização (Ar seco) - W</td>
-                        <td>34 eV/par de íons<br><span class="formula-inline">(34 &times; 1,602 &times; 10<sup>-19</sup> J/par)</span></td>
+                        <td>Energia média de ionização (Ar seco) - $W$</td>
+                        <td>34 eV/par de íons<br>($34 \\times 1,602 \\times 10^{-19}$ J/par)</td>
                     </tr>
                     <tr>
-                        <td>Energia de Repouso do Elétron (m<sub>e</sub>c<sup>2</sup>)</td>
+                        <td>Energia de Repouso do Elétron ($m_e c^2$)</td>
                         <td>0,511 MeV</td>
                     </tr>
                     <tr>
                         <td>Fator de conversão (R para C/kg)</td>
-                        <td><span class="formula-inline">1 R = 2,58 &times; 10<sup>-4</sup> C/kg</span></td>
+                        <td>1 R = $2,58 \\times 10^{-4}$ C/kg</td>
                     </tr>
                     <tr>
                         <td>Atividade (Conversão Ci para Bq)</td>
-                        <td><span class="formula-inline">1 Ci = 3,7 &times; 10<sup>10</sup> Bq</span> (desint./s)</td>
+                        <td>1 Ci = $3,7 \\times 10^{10}$ Bq (desint./s)</td>
                     </tr>
                     <tr>
-                        <td>Dose Absorvida (D) / Kerma (K)</td>
-                        <td><span class="formula-inline">1 Gy = 1 J/kg = 100 rad</span></td>
+                        <td>Dose Absorvida ($D$) / Kerma ($K$)</td>
+                        <td>1 Gy = 1 J/kg = 100 rad</td>
                     </tr>
                     <tr>
-                        <td>Dose Equivalente (H<sub>T</sub>) / Efetiva (E)</td>
-                        <td><span class="formula-inline">1 Sv = 1 J/kg = 100 rem</span></td>
+                        <td>Dose Equivalente ($H_T$) / Efetiva ($E$)</td>
+                        <td>1 Sv = 1 J/kg = 100 rem</td>
                     </tr>
                 </table>
             </div>
         `,
         1: `
-            <h3 class="scenario-title">1 Questão 1: Interpretação da Norma (Situações de Exposição)</h3>
-            <p>A Norma ANSN NN 3.01 (alinhada à ICRP 103) classifica as exposições à radiação em três situações fundamentais, determinando como as regras de proteção radiológica serão aplicadas em cada cenário.</p>
+            <h3 class="scenario-title">1ª Questão: Interpretação da Norma (ANSN NN 3.01)</h3>
+            <p>A norma ANSN NN 3.01 (Diretrizes Básicas de Proteção Radiológica) classifica as exposições à radiação em três situações fundamentais, determinando estratégias de controle específicas para cada uma.</p>
             
             <div class="bizu-section">
-                <h4>1.1 Fundamentação Técnica</h4>
+                <h4>1.1 Situações de Exposição</h4>
                 <ul class="step-list">
-                    <li><b>Situação de Exposição Planejada:</b> Ocorre devido à introdução e operação deliberada de uma fonte de radiação, instalação ou atividade planejada. A exposição é esperada e controlada. As medidas de radioproteção são previstas no projeto antes do início da operação. <b>Requisitos:</b> Cumprimento rigoroso dos três princípios fundamentais: Justificação, Otimização (com restrições de dose) e Limitação de Dose.</li>
-                    <li><b>Situação de Exposição de Emergência:</b> Surge como resultado de um acidente, ato malicioso ou evento inesperado que fuja do controle. Exige ação protetora imediata para recuperar o controle, salvar vidas e evitar efeitos determinísticos graves. <b>Requisitos:</b> Os limites de dose normais são suspensos para os trabalhadores de emergência e público. A proteção é guiada por Níveis de Referência (20 a 100 mSv) e Níveis de Intervenção Operacionais (NIOS).</li>
-                    <li><b>Situação de Exposição Existente:</b> Acontece quando a exposição à radiação já existe no momento em que se decide sobre a necessidade de controle (ex: radiação natural de fundo, radônio, ou áreas contaminadas após o término de uma emergência). <b>Requisitos:</b> Foca em ações de remediação justificadas e otimizadas balizadas por Níveis de Referência específicos (1 a 20 mSv/ano). Não há aplicação de limites de dose.</li>
-                </ul>
-            </div>
-            
-            <div class="bizu-section">
-                <h4>1.2 Onde Consultar (Tabelas e Anexos)</h4>
-                <ul class="step-list">
-                    <li><b>Norma ANSN NN 3.01:</b> Capítulos dedicados às definições de Situações de Exposição.</li>
-                    <li><b>Tabelas de Níveis de Intervenção (NIOS):</b> Anexos da norma para justificar medidas em emergências radiológicas.</li>
+                    <li><b>Planejada:</b> Ocorre quando a introdução da fonte é uma decisão deliberada e controlada desde o início. Exige licenciamento prévio. Aplica-se integralmente a tríade regulatória: Justificação, Otimização (ALARA) e Limitação de Dose. Limites anuais para trabalhadores (IOE) e público são aplicados rigorosamente.</li>
+                    <li><b>Emergência:</b> Cenário inesperado (acidente) que demanda ação imediata para mitigar consequências. <b>Os limites de dose normais são suspensos</b> para os profissionais de intervenção. A proteção é guiada por Níveis de Referência (20 a 100 mSv) e Níveis de Intervenção Operacionais (NIOs).</li>
+                    <li><b>Existente:</b> A exposição já está ocorrendo no momento em que se decide sobre o controle (ex: radônio no subsolo, áreas remanescentes de acidentes). Foca em ações de remediação e mitigação balizadas por Níveis de Referência. Não há aplicação de limites de dose estritos.</li>
                 </ul>
             </div>
 
-            <div class="bizu-section">
-                <h4 style="color:var(--accent-danger);">Como Pode Ser Cobrado (Foco da Prova)</h4>
-                <p>O professor cobrará a distinção conceitual através de um estudo de caso estruturado. <b>Cenário provável:</b> Uma narrativa descrevendo a rotina de um serviço (Planejada), seguida de um incidente como o travamento de uma fonte fora do blindador (Emergência), finalizando com a gestão da contaminação residual após o controle do acidente (Existente). <b>O que responder:</b> Identifique os marcos temporais de transição entre as situações e justifique que na fase planejada usa-se "Limites de Dose", enquanto nas fases de emergência e existente utilizam-se estritamente "Níveis de Referência e NIOs", aplicando a otimização em todas elas.</p>
+            <div class="cobranca-box">
+                <h5><i>🎯</i> Modelo de Cobrança na Prova (Análise de Caso Técnico)</h5>
+                <p><b>Cenário:</b> A tripulação de uma embarcação com propulsão nuclear precisa intervir imediatamente para conter uma falha no reator. Em terra, engenheiros revisam as doses anuais acumuladas pela equipe de radiografia industrial. Classifique e aponte a diferença regulatória quanto aos limites de dose.</p>
+                <p><b>Solução Esperada:</b> A intervenção na falha é uma <b>Situação de Exposição de Emergência</b>, enquanto a revisão em terra é <b>Planejada</b>. A principal diferença é que, na exposição planejada, os limites de dose (ex: 20 mSv/ano) são mandatórios. Na emergência, os limites fixos são temporariamente suspensos, adotando-se níveis de referência para permitir ações de salvamento.</p>
             </div>
             
             <div class="howto-box">
-                <strong>⚙️ Como usar o Oráculo na prova:</strong><br>
-                Na Aba "Oráculo de Cálculo", vá a <b>⚖️ NORMAS E DOSES</b> e selecione <i>"Interpretação da Norma (Situações de Exposição)"</i> para ter a síntese na tela.
+                <strong>⚙️ Como usar o Oráculo:</strong> Selecione "Interpretação da Norma (Situações de Exposição)" na aba lateral para manter um resumo rápido dessa teoria durante a prova.
             </div>
         `,
         2: `
-            <h3 class="scenario-title">2 Questão 2: Princípios Fundamentais e Classificação de Áreas</h3>
+            <h3 class="scenario-title">2ª Questão: Princípios e Áreas (ANSN NN 3.01)</h3>
+            
             <div class="bizu-section">
-                <h4>2.1 Fundamentação Técnica</h4>
+                <h4>2.1 Princípios Fundamentais</h4>
                 <ul class="step-list">
-                    <li><b>Justificação:</b> Qualquer decisão que altere a situação de exposição à radiação deve produzir mais benefício líquido do que o dano (detrimento radiológico) causado. Se não houver benefício líquido, a prática não deve ser adotada.</li>
-                    <li><b>Otimização (Princípio ALARA):</b> O nível de proteção deve garantir que a magnitude das doses, o número de expostos e a probabilidade de exposição sejam mantidos Tão Baixos Quanto Racionalmente Exequíveis, considerando fatores sociais e econômicos.</li>
-                    <li><b>Limitação de Dose:</b> A dose total para qualquer indivíduo não deve exceder os limites anuais (ex: 20 mSv/ano para IOE, 1 mSv/ano para o público). Este princípio NÃO se aplica a exposições médicas de pacientes.</li>
-                </ul>
-                <p><b>Sobre a Classificação de Áreas:</b></p>
-                <ul class="step-list">
-                    <li><b>Área Controlada:</b> Exige regras especiais e adoção de medidas específicas de proteção, controle de acesso e monitoração individual. Critério normativo (ANSN 3.01): Obrigatória quando o projeto prevê que as doses efetivas anuais para os Trabalhadores Ocupacionalmente Expostos (IOEs) possam exceder 3/10 do limite de dose (ou seja, &gt; 6 mSv/ano).</li>
-                    <li><b>Área Supervisionada:</b> Área adjacente, não exige medidas de proteção específicas na rotina de trabalho, mas as condições de exposição precisam ser mantidas sob contínua vigilância. Critério normativo: Doses anuais podem exceder o limite do público (1 mSv/ano), mas são inferiores a 6 mSv/ano.</li>
+                    <li><b>Justificação:</b> A prática deve produzir mais benefício líquido do que dano. (Não se justifica uso frívolo em joias ou raio-X para seguros de saúde sem indicação médica).</li>
+                    <li><b>Otimização (ALARA):</b> Manter magnitude de doses, número de expostos e probabilidade "Tão Baixos Quanto Racionalmente Exequíveis".</li>
+                    <li><b>Limitação de Dose:</b> Dose total não deve exceder limites anuais: <b>IOE (20 mSv/ano em média)</b> e <b>Público (1 mSv/ano)</b>. <i>(Lembre-se: Limite de dose não se aplica a exposição médica de pacientes)</i>.</li>
                 </ul>
             </div>
 
             <div class="bizu-section">
-                <h4>2.2 Onde Consultar (Tabelas e Anexos)</h4>
+                <h4>2.2 Classificação de Áreas (Critérios Numéricos)</h4>
                 <ul class="step-list">
-                    <li><b>Norma ANSN NN 3.01 - Anexo F:</b> "Classificação Radiológica de Áreas".</li>
-                    <li><b>ICRP 103:</b> Quadro resumo dos princípios e limites de dose ocupacional.</li>
+                    <li><b>Área Controlada:</b> Obrigatória se o projeto prever doses anuais para IOE <b>iguais ou superiores a 6 mSv/ano</b> (que equivale a 3/10 do limite anual). Exige restrição física, sinalização e monitoração.</li>
+                    <li><b>Área Supervisionada:</b> Área que não atinge 6 mSv, mas onde as doses podem ultrapassar o limite do público (1 mSv/ano). Condições devem ser mantidas sob supervisão.</li>
+                    <li><b>Hierarquia de Controles:</b> 1º Controles de Engenharia (blindagem); 2º Administrativos (rodízio de tempo); 3º EPI.</li>
                 </ul>
             </div>
 
-            <div class="bizu-section">
-                <h4 style="color:var(--accent-danger);">Como Pode Ser Cobrado (Foco da Prova)</h4>
-                <p>Questão analítica de projeto de instalação ou análise de mapa de isodoses. <b>Cenário provável:</b> Você receberá a taxa de dose de um equipamento operando em uma sala. Será solicitado que calcule a dose projetada anual para um operador (multiplicando a taxa de dose pelo tempo de jornada anual). Se o valor ultrapassar 6 mSv, você deve afirmar e justificar teoricamente que a sala deve ser classificada como <b>Área Controlada</b>, requerendo monitoração e controle de acesso para cumprir a Otimização e a Limitação de dose.</p>
+            <div class="cobranca-box">
+                <h5><i>🎯</i> Modelo de Cobrança na Prova (Análise de Projeto)</h5>
+                <p><b>Cenário:</b> Cálculos de blindagem mostram que as doses efetivas anuais para operadores de um setor atingirão 8 mSv. a) Qual a classificação obrigatória? b) Qual a hierarquia de controle?</p>
+                <p><b>Solução Esperada:</b> a) Deve obrigatoriamente ser <b>Área Controlada</b>, pois a dose projetada (8 mSv) supera o limiar normativo de 6 mSv/ano. Isso é fundamentado pelo princípio da <b>Limitação de Dose</b>. b) Para aplicar a <b>Otimização (ALARA)</b>, o projeto deve seguir a hierarquia: 1º Engenharia (aumentar espessura da blindagem), 2º Administrativos (limitar tempo de exposição), 3º EPI.</p>
             </div>
-
+            
             <div class="howto-box">
-                <strong>⚙️ Como usar o Oráculo na prova:</strong><br>
-                1. Selecione <i>"Classificação de Áreas"</i>.<br>
-                2. Marque as variáveis: <b>Taxa de Dose/Exp. (Ḣ)</b> e <b>Tempo / Jornada (t)</b>.
+                <strong>⚙️ Como usar o Oráculo:</strong> Selecione "Classificação de Áreas (Controlada/Supervisionada)". Insira Taxa de Dose e Tempo de Jornada para o sistema cruzar com os limites normativos (6 mSv/ano e 1 mSv/ano).
             </div>
         `,
         3: `
-            <h3 class="scenario-title">3 Questão 3: Grandezas Radiológicas</h3>
+            <h3 class="scenario-title">3ª Questão: Grandezas Radiológicas</h3>
+            <p>Trata das grandezas que quantificam o campo de radiação, a transferência e a deposição de energia na matéria.</p>
+            
             <div class="bizu-section">
-                <h4>3.1 Fundamentação Física e Equações (Nível Avançado)</h4>
+                <h4>3.1 Grandezas de Campo e Deposição</h4>
                 <ul class="step-list">
-                    <li><b>Fluência de Partículas (&Phi;) e Fluência de Energia (&Psi;):</b> A fluência descreve o campo de radiação. Sendo dN o número de partículas cruzando a área infinitesimal da, e E a energia de um feixe monoenergético:
-                        <div class="math-eq">&Phi; = dN / da &nbsp;&nbsp;&rArr;&nbsp;&nbsp; &Psi; = &Phi; &middot; E <span class="math-eq-number">(1)</span></div>
-                    </li>
-                    <li><b>Kerma (K - Kinetic Energy Released per unit Mass):</b> Grandeza exclusiva para radiação indiretamente ionizante (fótons/nêutrons). É a energia cinética inicial transferida (dE<sub>tr</sub>) à matéria por unidade de massa (dm). Para fótons, relaciona-se à fluência pelo coeficiente de transferência de energia em massa (&mu;<sub>tr</sub>/&rho;):
-                        <div class="math-eq">K = dE<sub>tr</sub> / dm = &Psi; ( &mu;<sub>tr</sub> / &rho; ) = &Phi; &middot; E ( &mu;<sub>tr</sub> / &rho; ) <span class="math-eq-number">(2)</span></div>
-                    </li>
-                    <li><b>Kerma Colisional (K<sub>c</sub>) e Kerma Radiativo (K<sub>r</sub>):</b> A energia cinética transferida ao elétron secundário pode ser gasta em colisões locais (K<sub>c</sub>) ou perdida via Bremsstrahlung (K<sub>r</sub>). Sendo g a fração de energia perdida por processos radiativos:
-                        <div class="math-eq">K = K<sub>c</sub> + K<sub>r</sub> &nbsp;&nbsp;&rArr;&nbsp;&nbsp; K<sub>c</sub> = K(1 - g) = &Psi; ( &mu;<sub>en</sub> / &rho; ) <span class="math-eq-number">(3)</span></div>
-                    </li>
-                    <li><b>Dose Absorvida (D):</b> Energia média cedida pela radiação e retida no volume. <b>Condição Vital (CPE):</b> Sob a condição de Equilíbrio Eletrônico de Partículas Carregadas (CPE), a dose absorvida é numericamente igual ao Kerma de Colisão: <span class="formula-inline">D = K<sub>c</sub></span></li>
-                    <li><b>Exposição (X):</b> Quantifica a ionização produzida por fótons no ar (dQ/dm). Relaciona-se com o K<sub>c</sub> no ar através do valor W (energia para criar um par de íons) e a carga do elétron e:
-                        <div class="math-eq">X = K<sub>c,ar</sub> ( e / W ) &nbsp;&nbsp;&rArr;&nbsp;&nbsp; D<sub>ar</sub> [Gy] &approx; 34 &middot; X [C/kg] <span class="math-eq-number">(4)</span></div>
-                    </li>
-                    <li><b>Lei do Inverso do Quadrado da Distância:</b>
-                        <div class="math-eq">I &prop; 1/d<sup>2</sup> &nbsp;&nbsp;&rArr;&nbsp;&nbsp; I<sub>1</sub> / I<sub>2</sub> = (d<sub>2</sub> / d<sub>1</sub>)<sup>2</sup> <span class="math-eq-number">(5)</span></div>
-                    </li>
+                    <li><b>Fluência de Partículas ($\Phi$):</b> $\Phi = \frac{dN}{da}$</li>
+                    <li><b>Fluência em Energia ($\Psi$):</b> $\Psi = \frac{dR}{da} = \Phi \cdot E$</li>
+                    <li><b>Kerma ($K$):</b> Energia cinética transferida. $K = \Psi \cdot \left(\frac{\mu_{tr}}{\rho}\right)$.<br> Subdivide-se em Colisional e Radiativo: $K = K_c + K_r$.<br> $K_c = \Psi \cdot \left(\frac{\mu_{en}}{\rho}\right)$.</li>
+                    <li><b>Dose Absorvida ($D$):</b> Energia retida no volume. Sob Equilíbrio Eletrônico (CPE), assume-se $D = K_c$.</li>
+                    <li><b>Dose Equivalente ($H_T$):</b> Pondera o dano biológico usando o fator da radiação ($w_R$). $H_T = D \cdot w_R$.</li>
                 </ul>
             </div>
 
-            <div class="bizu-section">
-                <h4>3.2 Onde Consultar (Tabelas e Anexos)</h4>
-                <ul class="step-list">
-                    <li><b>Livro Attix - Apêndices D.3 e D.4:</b> Tabela de &mu;<sub>tr</sub>/&rho; e &mu;<sub>en</sub>/&rho; (Mass Energy-Transfer e Mass Energy-Absorption Coefficients) para diversos materiais e energias de fótons.</li>
-                </ul>
+            <div class="cobranca-box">
+                <h5><i>🎯</i> Modelo de Cobrança na Prova (Conversão Analítica)</h5>
+                <p><b>Cenário:</b> Feixe de fótons de 2 MeV, fluência de $5 \times 10^{10} \text{ fótons/cm}^2$. Dado $(\mu_{en}/\rho) = 0,023 \text{ cm}^2/\text{g}$. Calcule Fluência em Energia (SI), Kerma Colisional ($K_c$) e Dose sob CPE.</p>
+                <p><b>Solução Esperada (Passo a passo rigoroso):</b></p>
+                <ol>
+                    <li>Converta $\Phi$: $5 \times 10^{10} \text{ cm}^{-2} = 5 \times 10^{14} \text{ m}^{-2}$.</li>
+                    <li>Converta $E$: $2 \text{ MeV} = 2 \times 10^6 \times 1,602 \times 10^{-19} \text{ J} = 3,204 \times 10^{-13} \text{ J}$.</li>
+                    <li>Calcule $\Psi = \Phi \cdot E = (5 \times 10^{14}) \cdot (3,204 \times 10^{-13}) = 160,2 \text{ J/m}^2$.</li>
+                    <li>Ajuste coeficiente para SI: $0,023 \text{ cm}^2/\text{g} = 0,0023 \text{ m}^2/\text{kg}$.</li>
+                    <li>Calcule $K_c = \Psi \cdot \left(\frac{\mu_{en}}{\rho}\right) = 160,2 \cdot 0,0023 = 0,368 \text{ Gy}$.</li>
+                    <li>Assuma Equilíbrio (CPE): $D = K_c = 0,368 \text{ Gy}$.</li>
+                </ol>
             </div>
-
-            <div class="bizu-section">
-                <h4 style="color:var(--accent-danger);">Como Pode Ser Cobrado (Foco da Prova)</h4>
-                <p>O professor cobrará a sequência matemática de conversão de feixe para dose biológica. <b>Cenário provável:</b> É dada uma fluência &Phi; de fótons de 1 MeV incidindo sobre um tecido humano. Pede-se a determinação do Kerma e da Dose. <b>O que fazer:</b></p>
-                <ul class="step-list">
-                    <li>1. Converta &Phi; &rarr; &Psi; multiplicando por E (fique atento às conversões de MeV para Joules, use o fator <span class="formula-inline">1,602 &times; 10<sup>-13</sup></span>).</li>
-                    <li>2. Vá à tabela (Attix D.3) e encontre &mu;<sub>tr</sub>/&rho; para calcular o Kerma.</li>
-                    <li>3. Volte à tabela, pegue &mu;<sub>en</sub>/&rho; para calcular o K<sub>c</sub>.</li>
-                    <li>4. Assuma CPE e declare que D = K<sub>c</sub>.</li>
-                </ul>
-            </div>
-
+            
             <div class="howto-box">
-                <strong>⚙️ Como usar o Oráculo na prova:</strong><br>
-                Selecione <i>"Calcular Kerma e Dose Absorvida"</i> e marque <b>Fluência</b> e <b>Energia</b>. A fórmula gerada já incluirá o fator 1,602 &times; 10<sup>-10</sup> destacado (pois converte de MeV/g para J/kg direto).
+                <strong>⚙️ Como usar o Oráculo:</strong> Selecione "Calcular Kerma e Dose Absorvida". O sistema fornece a equação direta utilizando a constante fixa $1,602 \times 10^{-10}$ para pular as conversões intermediárias do SI.
             </div>
         `,
         4: `
-            <h3 class="scenario-title">4 Questão 4: Radioatividade, Decaimento e Áreas</h3>
+            <h3 class="scenario-title">4ª Questão: Radioatividade e Decaimento</h3>
+            
             <div class="bizu-section">
-                <h4>4.1 Conversão entre Massa e Atividade</h4>
-                <p>Para determinar a atividade (A) de uma amostra a partir de sua massa (m), utilizamos a relação estequiométrica com a constante de Avogadro (N<sub>A</sub> = 6,022 &times; 10<sup>23</sup> mol<sup>-1</sup>) e a massa molar (M):</p>
+                <h4>4.1 Atividade, Meia-Vida e Massa</h4>
                 <ul class="step-list">
-                    <li>1. Cálculo do número de átomos (N):
-                        <div class="math-eq">N = ( m[g] / M[g/mol] ) &times; N<sub>A</sub> <span class="math-eq-number">(6)</span></div>
-                    </li>
-                    <li>2. Cálculo da Atividade (A): Utilizando a constante de decaimento (&lambda; em s<sup>-1</sup>), garantindo que T<sub>1/2</sub> esteja em segundos:
-                        <div class="math-eq">&lambda; = ln(2) / T<sub>1/2</sub>[s] &nbsp;&nbsp;&rArr;&nbsp;&nbsp; A [Bq] = &lambda; &times; N <span class="math-eq-number">(7)</span></div>
-                    </li>
-                </ul>
-                <div class="alert-box">
-                    <strong>Erros Comuns na Prova</strong>
-                    <ul>
-                        <li><b>Unidade de Tempo:</b> Se a meia-vida estiver em dias ou anos, a atividade não sairá em Becquerel (Bq) se você não converter para segundos (s).</li>
-                        <li><b>Massa Molar:</b> Certifique-se de usar a massa molar do isótopo específico (ex: <sup>60</sup>Co &approx; 60 g/mol) e não apenas a do elemento químico.</li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="bizu-section">
-                <h4>4.2 Fundamentação Física e Equações</h4>
-                <ul class="step-list">
-                    <li><b>Atividade e Tempo de Meia-Vida:</b> A lei do decaimento determina a Atividade A(t) (Bq ou Ci) a partir da atividade inicial A<sub>0</sub>, utilizando o tempo de meia-vida T<sub>1/2</sub>:
-                        <div class="math-eq">A(t) = A<sub>0</sub> e<sup>-&lambda;t</sup> &nbsp; onde &nbsp; &lambda; = ln(2) / T<sub>1/2</sub> &approx; 0,693 / T<sub>1/2</sub> <span class="math-eq-number">(8)</span></div>
-                    </li>
-                    <li><b>Conversão Massa para Atividade:</b> Relaciona a massa do isótopo (m), sua massa molar (M) e o Número de Avogadro (N<sub>A</sub>):
-                        <div class="math-eq">A = &lambda;N = ( ln(2) / T<sub>1/2</sub> ) ( m &middot; N<sub>A</sub> / M ) <span class="math-eq-number">(9)</span></div>
-                    </li>
-                    <li><b>Fontes Pontuais e Distância:</b> Para uma fonte pontual emissora gama de atividade A, a taxa de Exposição ou de Dose a uma distância d depende da Constante Específica Gamma (&Gamma;):
-                        <div class="math-eq">Ḣ = ( &Gamma; &middot; A(t) ) / d<sup>2</sup> <span class="math-eq-number">(10)</span></div>
-                    </li>
+                    <li><b>Constante de Decaimento ($\lambda$):</b> $\lambda = \frac{\ln(2)}{T_{1/2}}$ <br><i>(Atenção: $T_{1/2}$ deve ser convertido para segundos para achar a atividade em Becquerel).</i></li>
+                    <li><b>Lei do Decaimento Exponencial:</b> $A(t) = A_0 \cdot e^{-\lambda t}$</li>
+                    <li><b>Conversão Massa-Atividade:</b> Relaciona massa ($m$), Massa Molar ($M_A$) e Número de Avogadro ($N_A$): <br>$$A = \lambda N = \left(\frac{\ln(2)}{T_{1/2}}\right) \cdot \left(\frac{m \cdot N_A}{M_A}\right)$$</li>
                 </ul>
             </div>
 
-            <div class="bizu-section">
-                <h4>4.3 Onde Consultar (Tabelas e Anexos)</h4>
-                <ul class="step-list">
-                    <li><b>Apêndice de Constantes / Livro Texto:</b> Para valores de &Gamma; (Constante específica de taxa de dose, usualmente dada na prova em mSv&middot;m<sup>2</sup>/(h&middot;GBq) ou unidades equivalentes).</li>
-                </ul>
+            <div class="cobranca-box">
+                <h5><i>🎯</i> Modelo de Cobrança na Prova (Isolamento Radiológico)</h5>
+                <p><b>Cenário:</b> Pastilha de Cs-137 ($T_{1/2} = 30$ anos) com 10 mg. Constante $\Gamma \approx 0,08 \text{ mSv}\cdot\text{m}^2/\text{GBq}\cdot\text{h}$. Determine a Atividade Inicial e o raio de distanciamento para a taxa de dose limite de $10 \mu\text{Sv/h}$ ($0,01 \text{ mSv/h}$).</p>
+                <p><b>Solução Esperada:</b></p>
+                <ol>
+                    <li>Converta a meia-vida para segundos para achar o $\lambda = 7,33 \times 10^{-10} \text{ s}^{-1}$.</li>
+                    <li>Calcule átomos $N = (0,01\text{g} / 137) \times 6,022 \times 10^{23} \approx 4,4 \times 10^{19}$ átomos.</li>
+                    <li>Calcule $A_0 = \lambda N = 32,2 \text{ GBq}$.</li>
+                    <li>Use a equação de fonte pontual $\dot{H} = \frac{\Gamma \cdot A}{d^2}$ isolando a distância: <br> $$d = \sqrt{\frac{\Gamma \cdot A}{\dot{H}}}$$</li>
+                    <li>Substituindo: $d = \sqrt{\frac{0,08 \cdot 32,2}{0,01}} \approx 16,05 \text{ m}$.</li>
+                </ol>
             </div>
-
-            <div class="bizu-section">
-                <h4 style="color:var(--accent-danger);">Como Pode Ser Cobrado (Foco da Prova)</h4>
-                <p>Você deverá dimensionar a delimitação física de uma área de trabalho. <b>Cenário provável:</b> Baseado nos exercícios em sala, ele dará uma fonte de gamagrafia (ex: Iridium-192) comprada há X meses. <b>O que fazer:</b> Primeiro, você precisa corrigir a Atividade para a data de hoje usando a fórmula do decaimento. Em seguida, sabendo que a Área Supervisionada delimita-se pela taxa de dose da norma (ex: 1 mSv/h na fronteira), isole a distância d na equação da fonte pontual: <span class="formula-inline">d = &radic;( (&Gamma; &middot; A(t)) / Ḣ<sub>limite</sub> )</span> O resultado será o raio de isolamento em metros.</p>
-            </div>
-
+            
             <div class="howto-box">
-                <strong>⚙️ Como usar o Oráculo na prova:</strong><br>
-                Selecione <i>"Encontrar Atividade a partir da Massa..."</i>. Marque <b>Massa</b> e <b>Meia-Vida</b>. O sistema vai exibir a fórmula com um grande aviso sobre os Segundos.
+                <strong>⚙️ Como usar o Oráculo:</strong> Utilize "Encontrar Atividade a partir da Massa" e "Fluxo Isotrópico de Fonte Pontual" para revisar a sequência lógica das equações da fonte pontual e a conversão do Avogadro.
             </div>
         `,
         5: `
-            <h3 class="scenario-title">5 Questão 5: Partículas Beta e Detecção a Gás (Geiger)</h3>
-            <div class="alert-box">
-                <strong>Alerta Conceitual Crítico:</strong>
-                Contadores Geiger detectam partículas gerando pares elétron-íon no gás (ionização). Não confunda com o fenômeno de produção de pares pósitron-elétron (que é uma interação fotônica de alta energia &gt; 1,022 MeV).
-            </div>
-
+            <h3 class="scenario-title">5ª Questão: Partículas Beta e Detecção</h3>
+            <p>O foco é na quantificação da energia perdida e da carga gerada, fundamental para dosimetria gasosa (contadores Geiger e proporcionais).</p>
+            
             <div class="bizu-section">
-                <h4>5.1 Fundamentação Física e Equações</h4>
+                <h4>5.1 Produção de Pares e Carga Coletada</h4>
                 <ul class="step-list">
-                    <li><b>Alcance (Range) e Energia Mínima:</b> Para ser detectada, a partícula beta precisa ter energia mínima suficiente para atravessar a espessura da janela do detector (&rho;t<sub>janela</sub> &lt; R<sub>CSDA</sub>) e adentrar o volume sensível de gás.</li>
-                    <li><b>O Valor W e Produção de Pares Elétron-Íon:</b> Uma vez dentro do gás, a partícula beta perde energia cinética interagindo com os átomos do gás, criando pares elétron-íon. A energia média necessária para criar um par é o Valor W. Para o Ar e gases de detecção convencionais, W &approx; 34 eV/par.</li>
-                    <li><b>Geração e Coleta de Carga (Q):</b> A carga total coletada (Q) pela deposição de uma energia &Delta;E<sub>dep</sub> (em eV) no gás é calculada por:
-                        <div class="math-eq">Q = N<sub>pares</sub> &middot; e = ( &Delta;E<sub>dep</sub> / W ) &middot; e <span class="math-eq-number">(11)</span></div>
-                        Onde e = 1,602 &times; 10<sup>-19</sup> C.
-                    </li>
+                    <li><b>Valor $W$:</b> É a energia média gasta para produzir um único par elétron-íon no gás. Para o ar seco, $W \approx 34 \text{ eV/par}$.</li>
+                    <li><b>Número de Pares ($N$):</b> $N = \frac{\Delta E}{W}$</li>
+                    <li><b>Carga Elétrica Coletada ($Q$):</b> Sendo a carga elementar $e = 1,602 \times 10^{-19} \text{ C}$, a carga total é $$Q = N \cdot e$$</li>
                 </ul>
             </div>
 
-            <div class="bizu-section">
-                <h4>5.2 Onde Consultar (Tabelas e Anexos)</h4>
-                <ul class="step-list">
-                    <li><b>Livro Knoll Cap. 5:</b> Tabela de W-values para diferentes gases. Para Ar, assuma 34 eV caso não seja dado um gás específico.</li>
-                </ul>
+            <div class="cobranca-box">
+                <h5><i>🎯</i> Modelo de Cobrança na Prova (Cálculo de Carga)</h5>
+                <p><b>Cenário:</b> Partícula beta deposita 150 keV de energia num detetor com ar ($W = 34 \text{ eV/par}$). Calcule a carga elétrica total em Coulombs de um único sinal.</p>
+                <p><b>Solução Esperada:</b></p>
+                <ol>
+                    <li>Converta a energia: $\Delta E = 150 \text{ keV} = 150.000 \text{ eV}$.</li>
+                    <li>Calcule o número de pares: $N = \frac{150.000}{34} \approx 4.411,76 \text{ pares}$.</li>
+                    <li>Calcule a carga: $Q = 4.411,76 \times (1,602 \times 10^{-19}) \approx 7,06 \times 10^{-16} \text{ C}$.</li>
+                </ol>
             </div>
-
-            <div class="bizu-section">
-                <h4 style="color:var(--accent-danger);">Como Pode Ser Cobrado (Foco da Prova)</h4>
-                <p>O professor cobrará o cálculo da carga elétrica coletada a partir da energia depositada. <b>Cenário provável:</b> Uma partícula beta deposita totalmente sua energia de 0,5 MeV no gás de um contador Geiger (Ar). Qual a carga primária formada? <b>O que fazer:</b></p>
-                <ul class="step-list">
-                    <li>1. Converta a energia depositada para eV: <span class="formula-inline">0,5 &times; 10<sup>6</sup> eV</span>.</li>
-                    <li>2. Divida pelo Valor W (34 eV) para achar o número de íons criados: &approx; 14705 pares.</li>
-                    <li>3. Multiplique o número de pares pela carga elementar do elétron (<span class="formula-inline">1,602 &times; 10<sup>-19</sup> C</span>) para obter a resposta final em Coulombs.</li>
-                </ul>
-            </div>
-
+            
             <div class="howto-box">
-                <strong>⚙️ Como usar o Oráculo na prova:</strong><br>
-                Vá a <i>"Detetor Geiger: Pares Formados / Carga"</i>. Marque <b>Energia</b> e a Partícula <b>Elétron</b>. A fórmula exibirá a divisão por 34 eV e a multiplicação pela Carga do Elétron.
+                <strong>⚙️ Como usar o Oráculo:</strong> Selecione "Detetor Geiger: Pares Formados / Carga Coletada" e assinale Energia e Partícula Beta. O algoritmo demonstrará a relação sequencial entre $\Delta E$, $W$ e $e$.
             </div>
         `,
         6: `
-            <h3 class="scenario-title">6 Questão 6: Interação de Partículas com a Matéria (Cálculo de Dose em Folhas Cap. 8 Attix)</h3>
-            <p>Este é o tópico mais crucial, demandando atenção absoluta às três metodologias extraídas do Capítulo 8 do Livro-Texto (Attix).</p>
-
+            <h3 class="scenario-title">6ª Questão: Dose em Folhas (Attix - Stopping Power)</h3>
+            <p>A distinção fundamental reside no comportamento de partículas pesadas (linha reta) versus elétrons (trajetória tortuosa) ao atravessar folhas metálicas.</p>
+            
             <div class="bizu-section">
-                <h4>6.1 Fundamentação Física (Stopping Power)</h4>
-                <p>A taxa na qual a partícula carregada perde energia por distância percorrida é o Stopping Power Total (dT/&rho;dx) dividido em:</p>
-                <div class="math-eq">( dT / &rho;dx )<sub>Tot</sub> = ( dT / &rho;dx )<sub>c</sub> + ( dT / &rho;dx )<sub>r</sub> <span class="math-eq-number">(12)</span></div>
-                <p>A parcela <b>Colisional (c)</b> é responsável pela transferência local de dose via excitação/ionização. A parcela <b>Radiativa (r)</b> dita as perdas por bremsstrahlung, que majoritariamente escapam. O rendimento radiativo de uma partícula é o Yield (Y).</p>
-            </div>
-
-            <div class="bizu-section">
-                <h4>6.2 Onde Consultar (Tabelas e Anexos)</h4>
+                <h4>6.1 O Passo Zero: Elétron x Pesada</h4>
                 <ul class="step-list">
-                    <li><b>Attix - Apêndice E:</b> "Electron Mass Stopping Powers, Ranges, Radiation Yields...". Contém as colunas fundamentais que você deve usar: Collision Stopping Power, CSDA Range (g/cm<sup>2</sup>) e Radiation Yield (Y).</li>
+                    <li>Se for <b>Partícula Pesada</b>, a trajetória é reta. Yield ($Y$) é nulo.</li>
+                    <li>Se for <b>Elétron</b>, o espalhamento aumenta a trajetória. Ache o Radiation Length ($X_0$) do material, calcule $\xi = \frac{\rho t}{X_0}$ e vá ao gráfico (Fig. 8.11) para achar a $\%$ de aumento. Multiplique para achar a Espessura Efetiva: $\rho t' = \rho t \cdot (1 + \frac{\%}{100})$.</li>
                 </ul>
             </div>
 
             <div class="bizu-section">
-                <h4>6.3 Metodologia Completa para Prova: Os 3 Cenários</h4>
-                
-                <h5 style="color:var(--text-main); margin-top:15px;">6.3.1 Cenário 1: Folhas Finas (&rho;t &ll; R<sub>CSDA</sub>)</h5>
-                <p>A partícula atravessa a folha sem sofrer perda significativa de velocidade. O Stopping Power é assumido constante. <b>Correção para Elétrons (Scattering de Yang):</b> Como elétrons fazem caminhos em "zigue-zague", o caminho percorrido é maior que a espessura da folha. Calcula-se a espessura normalizada <span class="formula-inline">&xi; = (&rho;t) / X<sub>0</sub></span> (onde X<sub>0</sub> é o Radiation Length do material). Com a energia, vai-se a um gráfico (Fig 8.11 do Attix) para achar a % de aumento de trajetória. A espessura efetiva fica <span class="formula-inline">&rho;t' = &rho;t &middot; (1 + %/100)</span>.</p>
-                <div class="math-eq" style="background:rgba(16, 185, 129, 0.1); border-color:var(--accent-success);">
-                    Fórmula Folha Fina<br>
-                    D = 1,602 &times; 10<sup>-10</sup> &middot; &Phi; &middot; ( dT / &rho;dx )<sub>c</sub> &middot; ( &rho;t' / &rho;t ) [Gy] <span class="math-eq-number">(13)</span>
-                </div>
-                <p>Para partículas pesadas (alfa, prótons), o trajeto é reto, então a razão &rho;t'/&rho;t = 1.</p>
-
-                <h5 style="color:var(--text-main); margin-top:25px;">6.3.2 Cenário 2: Folhas Espessas (0,03 R<sub>CSDA</sub> &lt; &rho;t &lt; R<sub>CSDA</sub>)</h5>
-                <p>A partícula atravessa a placa, mas sofre perda severa de energia. O Stopping power varia drasticamente, então <b>a fórmula anterior está errada</b>. Deve-se usar a Tabela de Alcance (Range).</p>
-                <p><b>Passo a Passo Padrão (Exigido pelo Professor):</b></p>
+                <h4>6.2 Os Três Cenários de Cálculo (Depende de $\rho t$ vs $R_{CSDA}$)</h4>
                 <ul class="step-list">
-                    <li>1. Com a energia de entrada T<sub>0</sub> olhe o Apêndice E e encontre o Range Inicial: R<sub>CSDA</sub>(T<sub>0</sub>) e o Yield Radiativo Y(T<sub>0</sub>).</li>
-                    <li>2. Subtraia a espessura efetiva da placa para achar o Range de saída: R<sub>ex</sub> = R<sub>CSDA</sub>(T<sub>0</sub>) - &rho;t'.</li>
-                    <li>3. Volte ao Apêndice E, na coluna de Ranges, procure pelo valor R<sub>ex</sub> calculado. Leia a qual energia de saída T<sub>ex</sub> ele corresponde e pegue também o Y(T<sub>ex</sub>).</li>
-                    <li>4. Calcule a energia exclusivamente colisional depositada na folha (descontando o que vira bremsstrahlung):
-                        <div class="math-eq">&Delta;T<sub>c</sub> = T<sub>0</sub>[1 - Y(T<sub>0</sub>)] - T<sub>ex</sub>[1 - Y(T<sub>ex</sub>)] <span class="math-eq-number">(14)</span></div>
-                    </li>
-                    <li>5. A Dose Média será:
-                        <div class="math-eq" style="background:rgba(16, 185, 129, 0.1); border-color:var(--accent-success);">
-                            D = 1,602 &times; 10<sup>-10</sup> &middot; &Phi; &middot; ( &Delta;T<sub>c</sub> / &rho;t<sub>física</sub> ) [Gy] <span class="math-eq-number">(15)</span>
-                        </div>
-                    </li>
+                    <li><b>Cenário 1 (Folha Fina):</b> $\rho t \ll R_{CSDA}$. SP constante. <br> $$D = 1,602 \times 10^{-10} \cdot \Phi \cdot \left(\frac{S}{\rho}\right)_{col} \cdot \left(\frac{\rho t'}{\rho t}\right)$$</li>
+                    <li><b>Cenário 2 (Folha Espessa):</b> $0,03 R_{CSDA} < \rho t < R_{CSDA}$. A energia e o SP variam severamente. Use a tabela (Apêndice E). <br> 1) Ache $R_{CSDA}(T_0)$ e $Y(T_0)$. <br> 2) Calcule $R_{ex} = R_{CSDA}(T_0) - \rho t'$. <br> 3) Interpole $R_{ex}$ para achar $T_{ex}$ e $Y(T_{ex})$. <br> 4) Energia depositada por colisões: $\Delta T_c = T_0[1-Y(T_0)] - T_{ex}[1-Y(T_{ex})]$. <br> 5) Dose: $$D = 1,602 \times 10^{-10} \cdot \Phi \cdot \left(\frac{\Delta T_c}{\rho t_{fisica}}\right)$$</li>
+                    <li><b>Cenário 3 (Muito Espessa):</b> $\rho t > R_{CSDA}$. A partícula para. $T_{ex} = 0$. <br> $$D = 1,602 \times 10^{-10} \cdot \Phi \cdot \frac{T_0[1-Y(T_0)]}{\rho t}$$</li>
                 </ul>
-
-                <h5 style="color:var(--text-main); margin-top:25px;">6.3.3 Cenário 3: Folhas mais espessas que o Alcance (&rho;t &gt; R<sub>CSDA</sub>)</h5>
-                <p>A partícula não consegue atravessar; ela para totalmente dentro do material. Isso significa que a energia de saída é nula (T<sub>ex</sub> = 0). Toda a parcela colisional de sua energia original fica depositada.</p>
-                <div class="math-eq" style="background:rgba(16, 185, 129, 0.1); border-color:var(--accent-success);">
-                    Fórmula Folha Muito Espessa<br>
-                    D = 1,602 &times; 10<sup>-10</sup> &middot; &Phi; &middot; ( T<sub>0</sub>[1 - Y(T<sub>0</sub>)] / &rho;t ) [Gy] <span class="math-eq-number">(16)</span>
-                </div>
-                <p>Se a partícula for pesada (ex: alfa), o Y(T<sub>0</sub>) = 0 depositando integralmente toda a sua energia cinética T<sub>0</sub>.</p>
             </div>
 
-            <div class="bizu-section">
-                <h4 style="color:var(--accent-danger);">Como Pode Ser Cobrado (Foco da Prova)</h4>
-                <p>Esta questão é garantida na prova através de um problema clássico do Capítulo 8 do Attix ou listas de sala. <b>Cenário provável:</b> "Determine a dose média em uma placa de alumínio de 2 g/cm<sup>2</sup> atingida por um feixe de elétrons de 10 MeV com fluência de 10<sup>10</sup> e/cm<sup>2</sup>". <b>O que fazer:</b> Primeiro você tem que verificar em qual cenário ela se encaixa testando se a espessura dada é muito menor, pouco menor ou maior que o Range da partícula na tabela do Alumínio. Siga o passo a passo correspondente do quadro que definir o cenário (muito provavelmente cairá o Cenário 2 de folha espessa).</p>
+            <div class="cobranca-box">
+                <h5><i>🎯</i> Modelo de Cobrança na Prova (Folha Fina)</h5>
+                <p><b>Cenário:</b> Fluência $\Phi=10^{10}$ elétrons/cm$^2$ (1,0 MeV) sobre folha fina de Cobre ($\rho t = 0,01 \text{ g/cm}^2$). SP colisional do Cu em 1 MeV $= 1,293 \text{ MeV cm}^2\text{/g}$. Ache a dose.</p>
+                <p><b>Solução Esperada:</b> Achando $\xi$ para o cobre ($X_0 = 13,04$), temos $\xi \approx 7,7 \times 10^{-4}$. Pelo gráfico, espessura efetiva aumenta para fator $1,024$. <br> Dose $D = 1,602 \times 10^{-10} \cdot (10^{10}) \cdot (1,293) \cdot 1,024 \approx 2,11 \text{ Gy}$.</p>
             </div>
-
+            
             <div class="howto-box">
-                <strong>⚙️ Como usar o Oráculo na prova:</strong><br>
-                Objetivo: <i>"Dose em Folhas / Placas"</i>. Variáveis necessárias: <b>Fluência, Energia, Espessura e Tipo de Partícula</b>. O Oráculo listará os 3 cenários mastigados para colocar na prova. Você pode usar a aba <b>📈 Interpolação</b> para agilizar as contas do Cenário 2.
+                <strong>⚙️ Como usar o Oráculo:</strong> Selecione "Dose em Folhas" e insira Fluência, Energia e Espessura. A aba <b>📈 Interpolação</b> é indispensável para resolver rapidamente a interpolação do $R_{ex}$ no Cenário 2.
             </div>
         `
     };
@@ -785,12 +692,18 @@
     function showBizu(id, btn) {
         document.querySelectorAll('.bizu-btn').forEach(el => el.classList.remove('active'));
         btn.classList.add('active');
-        document.getElementById('bizu-content').innerHTML = bizuData[id];
+        const contentDiv = document.getElementById('bizu-content');
+        contentDiv.innerHTML = bizuData[id];
+        
+        // Aciona o MathJax para processar as fórmulas LaTeX recém injetadas no HTML
+        if (window.MathJax) {
+            MathJax.typesetPromise([contentDiv]).catch((err) => console.log(err.message));
+        }
     }
 
     // Carrega o conteúdo da Aba 0 no início
     document.addEventListener("DOMContentLoaded", function() {
-        document.getElementById('bizu-content').innerHTML = bizuData[0];
+        showBizu(0, document.querySelector('.bizu-btn.active'));
     });
 
     const vars = new Set();
@@ -851,24 +764,24 @@
                 let isEletron = currentParticle === 'eletron';
                 html += `<h3 class="scenario-title">Metodologia Attix (Cálculo em Placas)</h3>
                 <ol class="step-list">
-                    <li>Vá ao <b>Apêndice E</b> com a energia T<sub>0</sub>. Anote Range <span class="const">R<sub>CSDA</sub></span> e Yield <span class="const">Y(T<sub>0</sub>)</span>.</li>`;
+                    <li>Vá ao <b>Apêndice E</b> com a energia $T_0$. Anote $R_{CSDA}$ e $Y(T_0)$.</li>`;
                 if (isEletron) {
-                    html += `<li><b>Correção (Elétron):</b> Vá à Fig 8.11, calcule &xi; = (&rho;t) / X<sub>0</sub> para achar o % de aumento. A espessura que usa agora é a <span class="var">Espessura Efetiva (&rho;t')</span>.</li>
-                    <li>R<sub>ex</sub> = R<sub>CSDA</sub> - &rho;t'</li>`;
+                    html += `<li><b>Correção (Elétron):</b> Vá à Fig 8.11, calcule $\\xi = \\frac{\\rho t}{X_0}$ para achar o $\%$ de aumento. A espessura que usa agora é a <span class="var">Espessura Efetiva ($\\rho t'$)</span>.</li>
+                    <li>$R_{ex} = R_{CSDA} - \\rho t'$</li>`;
                 } else {
                     html += `<li><b>Partícula Pesada:</b> Yield = 0. Trajetória reta.</li>
-                    <li>R<sub>ex</sub> = R<sub>CSDA</sub> - Espessura Física (&rho;t)</li>`;
+                    <li>$R_{ex} = R_{CSDA} - \\rho t$</li>`;
                 }
                 html += `</ol>
-                <div class="formula-box" style="font-size:0.9rem;">
-                    <span class="logic">CENÁRIO 3 (R<sub>ex</sub> &le; 0) - Parou na placa:</span><br>
-                    D = <span class="const">1,602 &times; 10<sup>-10</sup></span> &middot; &Phi; &middot; [ T<sub>0</sub>(1 - Y(T<sub>0</sub>)) ] / &rho;t<br><br>
-                    <span class="logic">CENÁRIO 1 (Esp &lt; 0.05 R<sub>CSDA</sub>) - Fina:</span><br>
-                    D = <span class="const">1,602 &times; 10<sup>-10</sup></span> &middot; &Phi; &middot; (<span class="const">SP_Colisional</span>) &middot; (&rho;t' / &rho;t)<br><br>
-                    <span class="logic">CENÁRIO 2 (R<sub>ex</sub> &gt; 0) - Espessa (Atravessa):</span><br>
-                    Use a aba <span class="logic">📈 Interpolação</span> com R<sub>ex</sub> para achar T<sub>ex</sub> e Y(T<sub>ex</sub>).<br>
-                    &Delta;T<sub>c</sub> = [ T<sub>0</sub>(1 - Y(T<sub>0</sub>)) ] - [ T<sub>ex</sub>(1 - Y(T<sub>ex</sub>)) ]<br>
-                    D = <span class="const">1,602 &times; 10<sup>-10</sup></span> &middot; &Phi; &middot; ( &Delta;T<sub>c</sub> / &rho;t<sub>física</sub> )
+                <div class="formula-box" style="font-size:0.95rem;">
+                    <span class="logic">CENÁRIO 3 ($R_{ex} \\le 0$) - Parou na placa:</span><br>
+                    \\[ D = 1,602 \\times 10^{-10} \\cdot \\Phi \\cdot \\frac{T_0[1 - Y(T_0)]}{\\rho t} \\]<br>
+                    <span class="logic">CENÁRIO 1 (Fina):</span><br>
+                    \\[ D = 1,602 \\times 10^{-10} \\cdot \\Phi \\cdot \\left(\\frac{S}{\\rho}\\right)_{col} \\cdot \\frac{\\rho t'}{\\rho t} \\]<br>
+                    <span class="logic">CENÁRIO 2 ($R_{ex} > 0$) - Espessa (Atravessa):</span><br>
+                    Interpole $R_{ex}$ para achar $T_{ex}$ e $Y(T_{ex})$.<br>
+                    \\[ \\Delta T_c = T_0[1 - Y(T_0)] - T_{ex}[1 - Y(T_{ex})] \\]<br>
+                    \\[ D = 1,602 \\times 10^{-10} \\cdot \\Phi \\cdot \\frac{\\Delta T_c}{\\rho t} \\]
                 </div>`;
             }
         }
@@ -876,20 +789,20 @@
             check = checkMissing(['energia', 'particula'], ['Energia (T₀)', 'Tipo de Partícula']);
             html += check.html;
             if (check.ok) {
-                html += `<h3 class="scenario-title">Energia Máxima Transferida (T<sub>max</sub>)</h3>`;
-                if (currentParticle === 'eletron') html += `<div class="formula-box">Colisão e⁻/e⁻ (Idênticas): T<sub>max</sub> = <span class="var">T<sub>0</sub></span> / 2</div>`;
-                else if (currentParticle === 'positron') html += `<div class="formula-box">Colisão e⁺/e⁻ (Distintas): T<sub>max</sub> = <span class="var">T<sub>0</sub></span></div>`;
-                else html += `<div class="formula-box">Colisão Pesada/Elétron (Cinemática):<br>&beta;<sup>2</sup> = 1 - [ 1 / ( (<span class="var">T<sub>0</sub></span> / <span class="const">M<sub>0</sub>c<sup>2</sup></span>) + 1 ) ]<sup>2</sup><br>T<sub>max</sub> = 2(<span class="const">0,511 MeV</span>) &middot; [ &beta;<sup>2</sup> / (1 - &beta;<sup>2</sup>) ]</div>`;
+                html += `<h3 class="scenario-title">Energia Máxima Transferida ($T_{max}$)</h3>`;
+                if (currentParticle === 'eletron') html += `<div class="formula-box">Colisão $e^-$/$e^-$ (Idênticas): \\[ T_{max} = \\frac{T_0}{2} \\]</div>`;
+                else if (currentParticle === 'positron') html += `<div class="formula-box">Colisão $e^+$/$e^-$ (Distintas): \\[ T_{max} = T_0 \\]</div>`;
+                else html += `<div class="formula-box">Colisão Pesada/Elétron (Cinemática):<br>\\[ \\beta^2 = 1 - \\left[ \\frac{1}{\\frac{T_0}{M_0 c^2} + 1} \\right]^2 \\]<br>\\[ T_{max} = 2(0,511 \\text{ MeV}) \\cdot \\left( \\frac{\\beta^2}{1 - \\beta^2} \\right) \\]</div>`;
             }
         }
         else if (tgt === 'stopping_power') {
-            check = checkMissing(['energia', 'abundancia'], ['Energia', 'Fração Química (f)']);
+            check = checkMissing(['energia', 'abundancia'], ['Energia', 'Fração Química ($f$)']);
             html += check.html;
             if (check.ok) {
                 html += `<h3 class="scenario-title">Regra de Misturas de Bragg</h3>
                 <div class="formula-box">
-                    SP<sub>total</sub> = &Sigma; [ <span class="var">f<sub>i</sub></span> &middot; SP<sub>i</sub> ]<br><br>
-                    <span class="logic">Atenção:</span> As frações (f<sub>i</sub>) devem ser massas relativas e não proporções molares.
+                    \\[ SP_{total} = \\sum [ f_i \\cdot SP_i ] \\]<br><br>
+                    <span class="logic">Atenção:</span> As frações ($f_i$) devem ser frações em massa e não molares.
                 </div>`;
             }
         }
@@ -899,10 +812,10 @@
             if (check.ok) {
                 html += `<h3 class="scenario-title">Balanço na Produção de Pares</h3>
                 <div class="formula-box">
-                    <span class="logic">Energia Transferida (&epsilon;<sub>tr</sub>):</span><br>
-                    &epsilon;<sub>tr</sub> = <span class="var">E<sub>fóton</sub></span> - <span class="const">1,022 MeV</span><br><br>
-                    <span class="logic">Energia Transferida Líquida (&epsilon;<sub>tr</sub><sup>n</sup>):</span><br>
-                    &epsilon;<sub>tr</sub><sup>n</sup> = &epsilon;<sub>tr</sub> - R<sub>u</sub> (desconta Bremsstrahlung que escapa)
+                    <span class="logic">Energia Transferida ($\\epsilon_{tr}$):</span><br>
+                    \\[ \\epsilon_{tr} = E_{fóton} - 1,022 \\text{ MeV} \\]<br>
+                    <span class="logic">Energia Transferida Líquida ($\\epsilon_{tr}^n$):</span><br>
+                    \\[ \\epsilon_{tr}^n = \\epsilon_{tr} - R_u \\]<br>(desconta Bremsstrahlung que escapa)
                 </div>`;
             }
         }
@@ -914,9 +827,9 @@
             if (check.ok) {
                 html += `<h3 class="scenario-title">Determinação de Kerma e Dose</h3>
                 <div class="formula-box">
-                    Fluência de Energia (&Psi;) = <span class="var">&Phi;</span> &middot; <span class="var">E</span><br><br>
-                    Kerma = &Psi; &middot; (&mu;<sub>tr</sub>/&rho;) &middot; <span class="const">1,602 &times; 10<sup>-10</sup></span><br>
-                    Dose (D) = &Psi; &middot; (&mu;<sub>en</sub>/&rho;) &middot; <span class="const">1,602 &times; 10<sup>-10</sup></span>
+                    \\[ \\Psi = \\Phi \\cdot E \\]<br>
+                    \\[ K = \\Psi \\cdot \\left(\\frac{\\mu_{tr}}{\\rho}\\right) \\cdot 1,602 \\times 10^{-10} \\]<br>
+                    \\[ D = \\Psi \\cdot \\left(\\frac{\\mu_{en}}{\\rho}\\right) \\cdot 1,602 \\times 10^{-10} \\]
                 </div>`;
             }
         }
@@ -924,10 +837,10 @@
             check = checkMissing(['exposicao'], ['Exposição (X)']);
             html += check.html;
             if (check.ok) {
-                html += `<h3 class="scenario-title">Exposição (R) para Dose (Gy)</h3>
+                html += `<h3 class="scenario-title">Exposição ($R$) para Dose (Gy)</h3>
                 <div class="formula-box">
-                    X [C/kg] = <span class="var">X [R]</span> &middot; <span class="const">2,58 &times; 10<sup>-4</sup></span><br>
-                    Dose no Ar (Gy) = <span class="const">34</span> &middot; X [C/kg]
+                    \\[ X \\text{ [C/kg]} = X \\text{ [R]} \\cdot 2,58 \\times 10^{-4} \\]<br>
+                    \\[ D_{ar} \\text{ (Gy)} \approx 34 \\cdot X \\text{ [C/kg]} \\]
                 </div>`;
             }
         }
@@ -937,26 +850,26 @@
             if (check.ok) {
                 html += `<h3 class="scenario-title">Ionização (Valor W) e Carga</h3>
                 <div class="formula-box">
-                    N<sub>pares</sub> = (<span class="var">Energia</span> &times; 10<sup>6</sup>) / <span class="const">Valor_W (Ar &approx; 34 eV)</span><br>
-                    Carga_Total = N<sub>pares</sub> &middot; <span class="const">1,602 &times; 10<sup>-19</sup> C</span>
+                    \\[ N_{pares} = \\frac{E_{depositada} \\times 10^6}{34 \\text{ eV}} \\]<br>
+                    \\[ Q = N_{pares} \\cdot 1,602 \\times 10^{-19} \\text{ C} \\]
                 </div>`;
             }
         }
         else if (tgt === 'inverso_quadrado') {
             html += `<h3 class="scenario-title">Lei do Inverso do Quadrado</h3>
-            <div class="formula-box">Ḣ<sub>2</sub> = ( Ḣ<sub>1</sub> &middot; d<sub>1</sub><sup>2</sup> ) / d<sub>2</sub><sup>2</sup></div>`;
+            <div class="formula-box">\\[ \\dot{H}_2 = \\dot{H}_1 \\cdot \\left(\\frac{d_1}{d_2}\\right)^2 \\]</div>`;
         }
 
-        // RADIOATIVIDADE
+        // RADIOATIVIDADE E FONTES
         else if (tgt === 'ativ_massa') {
             check = checkMissing(['massa', 'meia_vida'], ['Massa', 'Meia-Vida']);
             html += check.html;
             if (check.ok) {
                 html += `<h3 class="scenario-title">Massa para Atividade</h3>
                 <div class="formula-box">
-                    N<sub>total</sub> = (<span class="var">Massa</span> / M<sub>molar</sub>) &times; <span class="const">6,022 &times; 10<sup>23</sup></span><br><br>
-                    &lambda; = ln(2) / <span class="var">T<sub>1/2</sub> [EM SEGUNDOS!]</span><br>
-                    Atividade [Bq] = &lambda; &middot; N<sub>total</sub>
+                    \\[ N = \\left(\\frac{m}{M_{molar}}\\right) \\cdot 6,022 \\times 10^{23} \\]<br>
+                    \\[ \\lambda = \\frac{\\ln(2)}{T_{1/2}} \\]<br><span style="color:var(--accent-warning);">Lembre-se: Use $T_{1/2}$ em SEGUNDOS!</span><br>
+                    \\[ A \\text{ [Bq]} = \\lambda \\cdot N \\]
                 </div>`;
             }
         }
@@ -966,8 +879,8 @@
             if (check.ok) {
                 html += `<h3 class="scenario-title">Decaimento Radioativo</h3>
                 <div class="formula-box">
-                    &lambda; = ln(2) / <span class="var">T<sub>1/2</sub></span><br>
-                    A(t) = <span class="var">A<sub>0</sub></span> &middot; e<sup>-&lambda;<span class="var">t</span></sup>
+                    \\[ \\lambda = \\frac{\\ln(2)}{T_{1/2}} \\]<br>
+                    \\[ A(t) = A_0 \\cdot e^{-\\lambda t} \\]
                 </div>`;
             }
         }
@@ -977,8 +890,8 @@
             if (check.ok) {
                 html += `<h3 class="scenario-title">Descobrir Meia-Vida</h3>
                 <div class="formula-box">
-                    A/A<sub>0</sub> = (1/2)<sup>n</sup>  &nbsp;&nbsp;<span class="logic">&rarr; ache "n"</span><br>
-                    Meia-Vida (T<sub>1/2</sub>) = <span class="var">Tempo</span> / n
+                    \\[ \\frac{A}{A_0} = \\left(\\frac{1}{2}\\right)^n \\] (Ache $n$)<br>
+                    \\[ T_{1/2} = \\frac{t}{n} \\]
                 </div>`;
             }
         }
@@ -988,8 +901,8 @@
             if (check.ok) {
                 html += `<h3 class="scenario-title">Fluxo de Fonte Pontual Isotrópica</h3>
                 <div class="formula-box">
-                    S<sub>0</sub> = <span class="var">Atividade [Bq]</span> &middot; Rendimento<br>
-                    Fluxo (&Phi;) = S<sub>0</sub> / ( 4&pi; &middot; <span class="var">d</span><sup>2</sup> )
+                    \\[ S_0 = A \\text{ [Bq]} \\cdot \\text{Rendimento} \\]<br>
+                    \\[ \\Phi = \\frac{S_0}{4\\pi d^2} \\]
                 </div>`;
             }
         }
@@ -998,17 +911,17 @@
         else if (tgt === 'norma_areas') {
             html += `<h3 class="scenario-title">Classificação de Áreas</h3>
             <div class="formula-box">
-                <span class="logic">Dose Projetada = Taxa (mSv/h) &times; Jornada (h)</span><br><br>
-                &ge; 6 mSv/ano : <b>Controlada</b> (3/10 do Limite)<br>
-                1 a 6 mSv/ano : <b>Supervisionada</b><br>
-                &le; 1 mSv/ano : <b>Livre</b>
+                Dose Projetada = Taxa (mSv/h) $\\times$ Jornada (h)<br><br>
+                $\\ge 6 \\text{ mSv/ano}$ : <b>Controlada</b> (Excede $3/10$ do Limite)<br>
+                $1 \\text{ a } 6 \\text{ mSv/ano}$ : <b>Supervisionada</b><br>
+                $\\le 1 \\text{ mSv/ano}$ : <b>Livre</b>
             </div>`;
         }
         else if (tgt === 'dose_equivalente') {
             html += `<h3 class="scenario-title">Doses Biológicas</h3>
             <div class="formula-box">
-                Dose Equiv. (H<sub>T</sub>) = &Sigma; [ <span class="var">w<sub>R</sub></span> &middot; D<sub>T,R</sub> ]<br>
-                Dose Efetiva (E) = &Sigma; [ <span class="var">w<sub>T</sub></span> &middot; H<sub>T</sub> ]
+                \\[ H_T = \\sum [ w_R \\cdot D_{T,R} ] \\]<br>
+                \\[ E = \\sum [ w_T \\cdot H_T ] \\]
             </div>`;
         }
         else if (tgt === 'exposicao_gama') {
@@ -1016,19 +929,22 @@
             html += check.html;
             if (check.ok) {
                 html += `<h3 class="scenario-title">Exposição via Constante Gama</h3>
-                <div class="formula-box">Exposição (X) = ( <span class="var">&Gamma;</span> &middot; <span class="var">A</span> &middot; <span class="var">t</span> ) / <span class="var">d</span><sup>2</sup></div>`;
+                <div class="formula-box">\\[ X = \\frac{\\Gamma \\cdot A \\cdot t}{d^2} \\]</div>`;
             }
         }
         else if (tgt === 'norma_situacoes') {
             html += `<h3 class="scenario-title">Situações de Exposição</h3>
             <ul class="step-list">
-                <li><b>Planejada:</b> Limitação de Dose não pode ser excedida. Justificação e Otimização.</li>
-                <li><b>Emergência:</b> Limites suspensos. Uso de NIOs e Níveis de Referência.</li>
-                <li><b>Existente:</b> Sem Limites. Baseada em ações de remediação.</li>
+                <li><b>Planejada:</b> Limitação de Dose (1 e 20 mSv) não pode ser excedida. Justificação e Otimização.</li>
+                <li><b>Emergência:</b> Limites de dose normais são suspensos. Uso de NIOs e Níveis de Referência.</li>
+                <li><b>Existente:</b> Sem Limites. Foco em ações de remediação justificada.</li>
             </ul>`;
         }
 
         out.innerHTML = html;
+        if (window.MathJax) {
+            MathJax.typesetPromise([out]).catch((err) => console.log(err.message));
+        }
     }
 </script>
 
